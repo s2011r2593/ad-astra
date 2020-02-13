@@ -13,7 +13,7 @@ class App extends Component {
       tStep: 0,
       doFade: true,
       center: 0,
-      timeDistortion: 1 / 1000000,
+      timeDistortion: 1 / 2.5e6,
     }
 
     this.handleResize = this.handleResize.bind(this);
@@ -86,10 +86,10 @@ class App extends Component {
     this.setState({ w: window.innerWidth });
     this.setState({ h: window.innerHeight });
 
-    var frustumSize = 1000000000000;
+    var frustumSize = 350000000000;
     var aspect = window.innerWidth / window.innerHeight;
     this.camera = new THREE.OrthographicCamera( frustumSize * aspect / -2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, -880796875000, 723187500000 );
-    this.camera.position.set( 0, 2.1, 5 );
+    this.camera.position.set( 0, 2, -5 );
     this.camera.lookAt(0, 0, 0);
 
 
@@ -178,34 +178,34 @@ class App extends Component {
                 t = {Math.round((this.state.tStep / (60 * this.state.timeDistortion))/1000)*1000} s
               </Counter>
               <Counter f={this.state.doFade}>
-                x<sub>sun</sub> = {Math.round(this.planets[0][0] - this.planets[this.state.center][0])} m
+                x<sub>sun</sub> = {(this.planets[0][0] - this.planets[this.state.center][0]).toExponential(4)} m
               </Counter>
               <Counter f={this.state.doFade}>
-                z<sub>sun</sub> = {Math.round(this.planets[0][1] - this.planets[this.state.center][1])} m
+                z<sub>sun</sub> = {(this.planets[0][1] - this.planets[this.state.center][1]).toExponential(4)} m
               </Counter>
               <Counter f={this.state.doFade}>
-                x<sub>mercury</sub> = {Math.round(this.planets[1][0] - this.planets[this.state.center][0])} m
+                x<sub>mercury</sub> = {(this.planets[1][0] - this.planets[this.state.center][0]).toExponential(4)} m
               </Counter>
               <Counter f={this.state.doFade}>
-                z<sub>mercury</sub> = {Math.round(this.planets[1][1] - this.planets[this.state.center][1])} m
+                z<sub>mercury</sub> = {(this.planets[1][1] - this.planets[this.state.center][1]).toExponential(4)} m
               </Counter>
               <Counter f={this.state.doFade}>
-                x<sub>venus</sub> = {Math.round(this.planets[2][0] - this.planets[this.state.center][0])} m
+                x<sub>venus</sub> = {(this.planets[2][0] - this.planets[this.state.center][0]).toExponential(4)} m
               </Counter>
               <Counter f={this.state.doFade}>
-                z<sub>venus</sub> = {Math.round(this.planets[2][1] - this.planets[this.state.center][1])} m
+                z<sub>venus</sub> = {(this.planets[2][1] - this.planets[this.state.center][1]).toExponential(4)} m
               </Counter>
               <Counter f={this.state.doFade}>
-                x<sub>earth</sub> = {Math.round(this.planets[3][0] - this.planets[this.state.center][0])} m
+                x<sub>earth</sub> = {(this.planets[3][0] - this.planets[this.state.center][0]).toExponential(4)} m
               </Counter>
               <Counter f={this.state.doFade}>
-                z<sub>earth</sub> = {Math.round(this.planets[3][1] - this.planets[this.state.center][1])} m
+                z<sub>earth</sub> = {(this.planets[3][1] - this.planets[this.state.center][1]).toExponential(4)} m
               </Counter>
               <Counter f={this.state.doFade}>
-                x<sub>mars</sub> = {Math.round(this.planets[4][0] - this.planets[this.state.center][0])} m
+                x<sub>mars</sub> = {(this.planets[4][0] - this.planets[this.state.center][0]).toExponential(4)} m
               </Counter>
               <Counter f={this.state.doFade}>
-                z<sub>mars</sub> = {Math.round(this.planets[4][1] - this.planets[this.state.center][1])} m
+                z<sub>mars</sub> = {(this.planets[4][1] - this.planets[this.state.center][1]).toExponential(4)} m
               </Counter>
             <Tips f={this.state.doFade}>
               <br/>Press SPACE to pause<br/>Press 0~4 to change the center of the solar system<br/>Press h to hide clutter
