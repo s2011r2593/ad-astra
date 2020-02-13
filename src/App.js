@@ -12,22 +12,26 @@ class App extends Component {
       showing: true,
       tStep: 0,
       doFade: true,
+      center: 0,
+      timeDistortion: 1 / 1000000,
     }
 
     this.handleResize = this.handleResize.bind(this);
     this.handleKey = this.handleKey.bind(this);
 
     this.planets = [];
-    this.G = 10;
+    this.G = 6.67e-11 / Math.pow(60 * this.state.timeDistortion, 2);
 
-    this.planets.push([0, 0, 45, 256, 0, 0, 0xf0eec5]); // x, z, r, m , vx, vz, color
-    this.planets.push([150, 0, 10, 16, 0, Math.pow(2560/150, 0.5), 0x3679e3]);
-    this.planets.push([300, 0, 8, 12, 0, Math.pow(2560/230, 0.5), 0xa83225]);
+    this.planets.push([0, 0, 40 * 723187500, 1.989e30, 0, 0, 0xffffb8]); // x, z, r, m , vx, vz, color
+    this.planets.push([-46034000000,  0, 3 * 723187500, 3.285e23, 0, Math.pow(this.G * this.planets[0][3] / 46034000000, 0.5), 0xe8e8e8]);
+    this.planets.push([-107920000000, 0, 5.5 * 723187500, 4.867e24, 0, Math.pow(this.G * this.planets[0][3] / 107920000000, 0.5), 0xffc859]);
+    this.planets.push([-147680000000, 0, 10 * 723187500, 5.972e24, 0, Math.pow(this.G * this.planets[0][3] / 147680000000, 0.5), 0x3679e3]);
+    this.planets.push([-231420000000, 0, 8 * 723187500, 6.39e23, 0, Math.pow(this.G * this.planets[0][3] / 231420000000, 0.5), 0xa83225]);
 
-    var frustumSize = 500;
+    var frustumSize = 350000000000;
     var aspect = window.innerWidth / window.innerHeight;
-    this.camera = new THREE.OrthographicCamera( frustumSize * aspect / -2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, -100, 1000 );
-    this.camera.position.set( 0, 2, 5 );
+    this.camera = new THREE.OrthographicCamera( frustumSize * aspect / -2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, -880796875000, 723187500000 );
+    this.camera.position.set( 0, 2, -5 );
     this.camera.lookAt(0, 0, 0);
 
     this.scene = new THREE.Scene();
@@ -36,17 +40,26 @@ class App extends Component {
     //var axesHelper = new THREE.AxesHelper( 5 );
     //scene.add( axesHelper );
 
-    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+    this.renderer = new THREE.WebGLRenderer( { antialias: true } );
     this.renderer.setPixelRatio( window.devicePixelRatio );
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
 
-    var light = new THREE.HemisphereLight( 0xf9faed, 0x220436, 1 );
-    this.scene.add( light );
+    this.light = new THREE.PointLight( 0xffffb8, 0.7, Infinity );
+    this.light.position.set( 0, 0, 0 );
+
+    var amb = new THREE.AmbientLight( 0xf9faed, 0.6 ); // soft white light
+    this.scene.add( amb );
+
+    this.scene.add( this.light );
 
     this.geos = [];
     var mats = [];
     var meshes = [];
-    for (var i = 0; i < this.planets.length; i++) {
+    this.geos.push(new THREE.SphereGeometry( this.planets[0][2], 30, 30 ));
+    mats.push(new THREE.MeshBasicMaterial({ color: this.planets[0][6] }));
+    meshes.push(new THREE.Mesh( this.geos[0], mats[0] ));
+    this.scene.add( meshes[0] )
+    for (var i = 1; i < this.planets.length; i++) {
       this.geos.push(new THREE.SphereGeometry( this.planets[i][2], 30, 30 ));
       this.geos[i].translate( this.planets[i][0], 0, this.planets[i][1] );
       mats.push(new THREE.MeshLambertMaterial({ color: this.planets[i][6], shading: THREE.FlatShading }));
@@ -73,10 +86,10 @@ class App extends Component {
     this.setState({ w: window.innerWidth });
     this.setState({ h: window.innerHeight });
 
-    var frustumSize = 500;
+    var frustumSize = 1000000000000;
     var aspect = window.innerWidth / window.innerHeight;
-    this.camera = new THREE.OrthographicCamera( frustumSize * aspect / -2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, -100, 1000 );
-    this.camera.position.set( 0, 2, 5 );
+    this.camera = new THREE.OrthographicCamera( frustumSize * aspect / -2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, -880796875000, 723187500000 );
+    this.camera.position.set( 0, 2.1, 5 );
     this.camera.lookAt(0, 0, 0);
 
 
@@ -89,6 +102,16 @@ class App extends Component {
       this.pause();
     } else if (e.keyCode === 72) {
       this.hide();
+    } else if (e.keyCode === 48) {
+      this.setState({ center: 0 });
+    } else if (e.keyCode === 49) {
+      this.setState({ center: 1 });
+    } else if (e.keyCode === 50) {
+      this.setState({ center: 2 });
+    } else if (e.keyCode === 51) {
+      this.setState({ center: 3 });
+    } else if (e.keyCode === 52) {
+      this.setState({ center: 4 });
     }
   }
 
@@ -114,7 +137,8 @@ class App extends Component {
       }
 
       //camera.translateZ(this.planets[0][5]);
-      this.camera.position.set( this.planets[0][0], 130, this.planets[0][1] + 300);
+      this.camera.position.set( this.planets[this.state.center][0], 130, this.planets[this.state.center][1] + 300);
+      this.light.position.set( this.planets[0][0], 0, this.planets[0][1] );
 
       requestAnimationFrame( this.animate );
       this.renderer.render( this.scene, this.camera );
@@ -147,41 +171,44 @@ class App extends Component {
         </Title>
         {this.state.showing &&
           <Variables>
-            <Counter f={this.state.doFade}>
-              Variables:
-            </Counter>
-            <Counter f={this.state.doFade}>
-              G = 10 Nm<sup>2</sup> / kg<sup>2</sup>
-            </Counter>
-            <Counter f={this.state.doFade}>
-              t = {this.state.tStep} s
-            </Counter>
-            <Counter f={this.state.doFade}>
-              m<sub>sun</sub> = 256 kg
-            </Counter>
-            <Counter f={this.state.doFade}>
-              m<sub>1</sub> = {this.planets[1][3]} kg
-            </Counter>
-            <Counter f={this.state.doFade}>
-              x<sub>1</sub> = {Math.round(this.planets[1][0] - this.planets[0][0])} m
-            </Counter>
-            <Counter f={this.state.doFade}>
-              z<sub>1</sub> = {Math.round(this.planets[1][1] - this.planets[0][1])} m
-            </Counter>
-            <Counter f={this.state.doFade}>
-              m<sub>2</sub> = {this.planets[2][3]} kg
-            </Counter>
-            <Counter f={this.state.doFade}>
-              x<sub>2</sub> = {Math.round(this.planets[2][0] - this.planets[0][0])} m
-            </Counter>
-            <Counter f={this.state.doFade}>
-              z<sub>2</sub> = {Math.round(this.planets[2][1] - this.planets[0][1])} m
-            </Counter>
+              <Counter f={this.state.doFade}>
+                Variables:
+              </Counter>
+              <Counter f={this.state.doFade}>
+                t = {Math.round((this.state.tStep / (60 * this.state.timeDistortion))/1000)*1000} s
+              </Counter>
+              <Counter f={this.state.doFade}>
+                x<sub>sun</sub> = {Math.round(this.planets[0][0] - this.planets[this.state.center][0])} m
+              </Counter>
+              <Counter f={this.state.doFade}>
+                z<sub>sun</sub> = {Math.round(this.planets[0][1] - this.planets[this.state.center][1])} m
+              </Counter>
+              <Counter f={this.state.doFade}>
+                x<sub>mercury</sub> = {Math.round(this.planets[1][0] - this.planets[this.state.center][0])} m
+              </Counter>
+              <Counter f={this.state.doFade}>
+                z<sub>mercury</sub> = {Math.round(this.planets[1][1] - this.planets[this.state.center][1])} m
+              </Counter>
+              <Counter f={this.state.doFade}>
+                x<sub>venus</sub> = {Math.round(this.planets[2][0] - this.planets[this.state.center][0])} m
+              </Counter>
+              <Counter f={this.state.doFade}>
+                z<sub>venus</sub> = {Math.round(this.planets[2][1] - this.planets[this.state.center][1])} m
+              </Counter>
+              <Counter f={this.state.doFade}>
+                x<sub>earth</sub> = {Math.round(this.planets[3][0] - this.planets[this.state.center][0])} m
+              </Counter>
+              <Counter f={this.state.doFade}>
+                z<sub>earth</sub> = {Math.round(this.planets[3][1] - this.planets[this.state.center][1])} m
+              </Counter>
+              <Counter f={this.state.doFade}>
+                x<sub>mars</sub> = {Math.round(this.planets[4][0] - this.planets[this.state.center][0])} m
+              </Counter>
+              <Counter f={this.state.doFade}>
+                z<sub>mars</sub> = {Math.round(this.planets[4][1] - this.planets[this.state.center][1])} m
+              </Counter>
             <Tips f={this.state.doFade}>
-              *Press SPACE to pause
-            </Tips>
-            <Tips f={this.state.doFade}>
-              *Press h to hide Variables
+              <br/>Press SPACE to pause<br/>Press 0~4 to change the center of the solar system<br/>Press h to hide clutter
             </Tips>
           </Variables>
         }
@@ -219,7 +246,7 @@ const TitleText = styled.h1`
 
 const Variables = styled.div`
   position: absolute;
-  bottom: 8px;
+  bottom: 14px;
   left: 35px;
   z-index: 100;
   display: block;
@@ -229,10 +256,11 @@ const Variables = styled.div`
 const Counter = styled.h2`
   color: #ebebebbb;
   font-style: italic;
-  font-size: 18px;
+  font-size: 16px;
   font-family: 'Sulphur Point', sans-serif;
   font-weight: 300;
   animation: ${Fade} 2s linear ${props => (props.f === false) ? 0 : 1};
+  line-height: 16px;
 `;
 
 const Tips = styled.p`
