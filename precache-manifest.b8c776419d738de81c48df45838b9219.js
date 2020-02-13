@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "767be9472119566b4b0d9c489668b7d1",
+    "revision": "4809176440712e6d606b47d9ef7e77b9",
     "url": "/ad-astra/index.html"
   },
   {
-    "revision": "5493d8d5a02012d2c9a1",
+    "revision": "97a9f39c9ed65cf5c57c",
     "url": "/ad-astra/static/css/main.19a7817b.chunk.css"
   },
   {
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/ad-astra/static/js/2.907f7abb.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "5493d8d5a02012d2c9a1",
-    "url": "/ad-astra/static/js/main.27253426.chunk.js"
+    "revision": "97a9f39c9ed65cf5c57c",
+    "url": "/ad-astra/static/js/main.c3bb8f2a.chunk.js"
   },
   {
     "revision": "9ed4b657161e2a1efa1b",
