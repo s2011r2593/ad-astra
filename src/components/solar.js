@@ -17,8 +17,6 @@ class App extends Component {
       screen: 0,
     }
 
-    this.raf = requestAnimationFrame( this.animate );
-
     this.handleResize = this.handleResize.bind(this);
     this.handleKey = this.handleKey.bind(this);
 
@@ -37,10 +35,8 @@ class App extends Component {
     this.camera.position.set( 0, 2, -5 );
     this.camera.lookAt(0, 0, 0);
 
-    this.scene = this.props.scene;
-
-    //var axesHelper = new THREE.AxesHelper( 5 );
-    //scene.add( axesHelper );
+    this.scene = new THREE.Scene();
+    this.scene.background = new THREE.Color( 0x220436 );
 
     this.renderer = new THREE.WebGLRenderer( { antialias: true } );
     this.renderer.setPixelRatio( window.devicePixelRatio );
@@ -69,6 +65,8 @@ class App extends Component {
       this.meshes[i].castShadow = true;
       this.scene.add( this.meshes[i] )
     }
+
+    this.raf = requestAnimationFrame( this.animate );
   }
 
   componentDidMount() {
@@ -166,10 +164,6 @@ class App extends Component {
 
   toggleScreen = () => {
     cancelAnimationFrame( this.raf );
-
-    this.renderer.dispose();
-
-    this.props.handler();
   }
 
   render() {
